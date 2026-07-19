@@ -1,0 +1,96 @@
+---
+description: Наследование существующей дизайн-системы UAOS (стили, токены, вёрстка, паттерны UI). Запрещает новые визуальные языки.
+alwaysApply: true
+---
+
+# UAOS Design System — наследование стилей
+
+Источник правды: `src/index.css` (`@theme`, glass/grid utilities) + существующие секции в `src/components/**`.
+
+При любой UI/CSS/разметке — **копируй паттерны проекта**. Не вводи новый look, библиотеку UI, другую палитру или типографику без явного запроса пользователя.
+
+## Стек (не менять без запроса)
+
+- Tailwind CSS v4 (`@import "tailwindcss"` + `@theme` в `index.css`)
+- lucide-react для иконок
+- light/dark через классы `light` / `dark` на `<html>`
+- Без shadcn / MUI / новых CSS-фреймворков
+
+## Токены — только существующие
+
+Цвета: `brand-blue-*`, `brand-yellow-*`, `brand-sky-*`, `brand-slate-*`.  
+Тёмные фоны страницы: `bg-slate-50` / `dark:bg-[#060810]` (или уже используемые slate/950).  
+Шрифты: `font-sans` (Inter), `font-display` (Space Grotesk), `font-mono` (JetBrains Mono), `font-manrope` (taglines).
+
+```tsx
+// ❌ BAD — новая палитра / шрифт
+className="bg-violet-600 font-[Poppins] rounded-full"
+
+// ✅ GOOD — токены проекта
+className="bg-brand-blue-500 font-display rounded-xl"
+```
+
+Не добавляй произвольные hex, кроме уже принятых (`#060810`, `#0c1222` и т.п. в существующих компонентах).
+
+## Глобальные визуальные примитивы
+
+Использовать классы из `index.css`, не дублировать своими:
+
+- `.glass-header` / `.glass-card` / `.glass-pill` / `.glass-card-hover`
+- `.bg-grid-pattern`
+- mesh-gradients как в `App.tsx` (fixed blur-blobs) — не плоский одноцветный фон вместо атмосферы
+- scrollbar / `.no-scrollbar` / `.animate-marquee` — только если уже уместно по контексту
+
+## Layout-каркас
+
+- Контейнер: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
+- Секции: `scroll-mt-24 py-6 lg:py-8`, разделители `border-y border-brand-slate-200/20 dark:border-brand-slate-850/20`
+- Радиусы: `rounded-lg` (inputs) → `rounded-xl` / `rounded-2xl` (cards/buttons) → `rounded-3xl` (крупные панели); pills — `rounded-full` только для badges/overline
+- Переходы: `transition-all duration-200|300`, easing hover-карточек: `cubic-bezier(0.22, 1, 0.36, 1)`
+
+## Повторяемые UI-шаблоны
+
+**Section header (centered):**
+`text-xs font-mono font-bold tracking-widest text-brand-blue-500 dark:text-brand-sky-300 uppercase`  
+→ `text-3xl sm:text-4xl font-display font-bold … tracking-tight`  
+→ underline `h-1 w-12 bg-brand-blue-500 mx-auto rounded-full`
+
+**Primary CTA:**
+`rounded-xl bg-brand-blue-500 hover:bg-brand-blue-600 active:bg-brand-blue-700 text-white … shadow-md shadow-brand-blue-500/15`
+
+**Secondary CTA:**
+`rounded-xl bg-white dark:bg-brand-slate-900 border border-brand-slate-200 dark:border-brand-slate-800 hover:border-brand-blue-500 …`
+
+**Overline / pill:**
+`rounded-full` + pulse-dot + `font-mono uppercase tracking-wider text-[11px]` blue tones
+
+**Document / folded card** (Mission, Directions, Founders):
+- left accent `border-l-[3px]` чередование blue ↔ amber
+- `clipPath` cut top-right + fold triangle
+- watermark lucide icon
+- hover lift + siblings dim (`opacity-70`)
+- `glass-card` где уже принято
+
+**Forms:** labels `text-xs font-mono … uppercase`; inputs `p-2.5 rounded-lg text-xs` slate-50/950 + `focus:border-brand-blue-500`
+
+**Footer:** остаётся dark `bg-brand-slate-900` (не светлый footer)
+
+## Анимации и motion
+
+- Предпочтительно CSS / существующие hover / IntersectionObserver / rAF (карусель)
+- `motion` — только если уже используется рядом; не тащить Framer/GSAP без запроса
+- Не добавлять glow/neon/purple-theme ради «красоты»
+
+## Запрещено без явного запроса
+
+- Новая дизайн-система, компоненты shadcn «с нуля», смена шрифтов
+- Purple-on-white / cream+serif / newspaper densе layouts
+- Карточки с толстыми multi-shadow / rounded-full pills как основной UI
+- Ломать light/dark паритет (каждый новый блок — обе темы)
+- Хардкод одноразовых отступов вроде `mr-[-101px]` без причины; новые блоки — адаптивная сетка
+
+## Перед правкой UI
+
+1. Открой ближайший похожий компонент в `src/components/` и **скопируй классы/структуру**.
+2. Проверь токены в `src/index.css`.
+3. Если нужен новый паттерн — сначала предложи вариант в стиле существующих; не внедряй чужой визуальный язык.
