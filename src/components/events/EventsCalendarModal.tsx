@@ -172,7 +172,7 @@ export default function EventsCalendarModal({
       tabIndex={-1}
       ref={modalRef}
     >
-      <div className="bg-brand-slate-50 dark:bg-brand-slate-900 w-full h-[100dvh] md:h-auto md:max-h-[85vh] md:rounded-2xl shadow-2xl flex flex-col overflow-hidden min-h-0 max-w-6xl">
+      <div className="bg-brand-slate-50 dark:bg-brand-slate-900 w-full h-[100dvh] md:h-[min(85vh,900px)] md:rounded-2xl shadow-2xl flex flex-col overflow-hidden min-h-0 max-w-6xl">
         
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white dark:bg-brand-slate-800 border-b border-brand-slate-200 dark:border-brand-slate-700 shrink-0">
@@ -218,7 +218,7 @@ export default function EventsCalendarModal({
                   <ChevronLeft className="w-4 h-4" /> Назад
                 </button>
               </div>
-              <div className="flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-hidden p-0">
                 <EventDetails event={selectedEvent} currentLang={currentLang} />
               </div>
             </div>
@@ -310,9 +310,11 @@ export default function EventsCalendarModal({
           </div>
 
           {/* Right Panel: Details (Desktop) */}
-          <div className="hidden lg:flex flex-col flex-1 h-full min-h-0 overflow-hidden bg-brand-slate-100 dark:bg-brand-slate-900/30">
+          <div className="hidden lg:flex flex-col flex-1 min-h-0 overflow-hidden bg-brand-slate-100 dark:bg-brand-slate-900/30">
             {selectedEvent ? (
-              <EventDetails event={selectedEvent} currentLang={currentLang} />
+              <div className="h-full min-h-0">
+                <EventDetails event={selectedEvent} currentLang={currentLang} />
+              </div>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-brand-slate-400 p-8 text-center">
                 <CalendarIcon className="w-16 h-16 mb-4 opacity-20" />

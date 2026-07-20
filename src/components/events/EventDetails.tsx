@@ -32,7 +32,7 @@ export default function EventDetails({ event, currentLang }: EventDetailsProps) 
             <img
               src={event.coverImageUrl}
               alt={event.title[currentLang]}
-              className="w-full max-h-[min(36vh,240px)] object-contain object-center"
+              className="w-full max-h-[min(28vh,200px)] object-contain object-center"
             />
           </div>
         )}
