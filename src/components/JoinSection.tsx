@@ -23,6 +23,7 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
 
   // Status states
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string>('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,44 +53,86 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    setFormError('');
     setIsSubmitting(true);
+    const hp =
+      (e.currentTarget.elements.namedItem('hp') as HTMLInputElement | null)?.value?.toString() ||
+      '';
 
-    // Mock API delay
-    setTimeout(() => {
+    const payloadBase = {
+      companyName,
+      website,
+      activityField,
+      contactPerson,
+      email,
+      phone,
+      message,
+      edrpou,
+    };
+
+    try {
+      let savedRemotely = false;
+      const payloadForServer = {...payloadBase, consent, hp};
+      const payloadForLocal = payloadBase;
+
       try {
-        addJoinRequest({
-          companyName,
-          website,
-          activityField,
-          contactPerson,
-          email,
-          phone,
-          message,
-          edrpou
+        const res = await fetch('/api/join', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payloadForServer),
         });
-
-        setIsSuccess(true);
-        // Reset form
-        setCompanyName('');
-        setWebsite('');
-        setActivityField('');
-        setEdrpou('');
-        setContactPerson('');
-        setEmail('');
-        setPhone('');
-        setMessage('');
-        setConsent(false);
-        setErrors({});
+        if (res.ok) {
+          savedRemotely = true;
+        } else {
+          const data = await res.json().catch(() => null);
+          if (import.meta.env.PROD) {
+            throw new Error(data?.error || 'Request rejected');
+          }
+        }
       } catch (err) {
-        console.error('Failed to submit join request', err);
-      } finally {
-        setIsSubmitting(false);
+        // offline / local dev without API
+        if (import.meta.env.PROD) {
+          setFormError(
+            currentLang === 'uk'
+              ? 'Не вдалося надіслати заявку. Спробуйте пізніше.'
+              : 'Failed to submit request. Try later.'
+          )
+          return
+        }
       }
-    }, 1000);
+
+      if (!savedRemotely) {
+        addJoinRequest(payloadForLocal);
+      }
+
+      setIsSuccess(true);
+      setCompanyName('');
+      setWebsite('');
+      setActivityField('');
+      setEdrpou('');
+      setContactPerson('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+      setConsent(false);
+      setErrors({});
+      setFormError('');
+    } catch (err) {
+      console.error('Failed to submit join request', err);
+      if (import.meta.env.PROD) {
+        setFormError(
+          currentLang === 'uk'
+            ? 'Не вдалося надіслати заявку. Спробуйте пізніше.'
+            : 'Failed to submit request. Try later.'
+        )
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -170,6 +213,15 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {/* Honeypot: bots that auto-fill will typically populate it. */}
+                  <input
+                    type="text"
+                    name="hp"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="hidden"
+                  />
                   
                   {/* Row 1: Org name & Web */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -314,6 +366,11 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
                   </div>
 
                   {/* Submit Button */}
+                  {formError && (
+                    <div className="text-[10px] text-red-500 font-mono pt-2" role="alert">
+                      {formError}
+                    </div>
+                  )}
                   <button
                     type="submit"
                     disabled={isSubmitting}

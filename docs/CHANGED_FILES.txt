@@ -1,0 +1,49 @@
+# UAOS — файлы, изменённые в сессиях (для синка в AI Studio)
+# Правило: новый изменённый файл → добавить строкой ниже.
+# Уже есть в списке → НЕ дублировать.
+# Формат: путь от корня репо, один файл = одна строка.
+
+.cursor/rules/changed-files-sync.mdc
+.cursor/rules/uaos-design-system.mdc
+.env.example
+.gitignore
+README.md
+api/join.ts
+docs/CHANGED_FILES.txt
+docs/SANITY_SETUP.md
+package.json
+package-lock.json
+public/logos/README.md
+public/logos/logo.png
+scripts/seed-events.mjs
+src/App.tsx
+src/components/AdminPanel.tsx
+src/components/Footer.tsx
+src/components/Header.tsx
+src/components/JoinSection.tsx
+src/components/NewsSection.tsx
+src/data/documents.ts
+src/data/events.ts
+src/data/members.ts
+src/data/news.ts
+src/data/siteSettings.ts
+src/lib/sanity.ts
+src/vite-env.d.ts
+studio/.env.example
+studio/.gitignore
+studio/README.md
+studio/package.json
+studio/sanity.cli.ts
+studio/sanity.config.ts
+studio/schemaTypes/associationDocument.ts
+studio/schemaTypes/event.ts
+studio/schemaTypes/index.ts
+studio/schemaTypes/joinRequest.ts
+studio/schemaTypes/locale.ts
+studio/schemaTypes/member.ts
+studio/schemaTypes/news.ts
+studio/schemaTypes/siteSettings.ts
+studio/tsconfig.json
+tsconfig.json
+vercel.json
+studio/package-lock.json

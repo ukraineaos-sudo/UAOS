@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Shield, ExternalLink } from 'lucide-react';
+import { Mail, Phone, MapPin, Shield } from 'lucide-react';
 import { TRANSLATIONS } from '../data/translations';
+import { SiteSettings, DEFAULT_SITE_SETTINGS } from '../data/siteSettings';
 
 interface FooterProps {
   currentLang: 'uk' | 'en';
   onNavigate: (route: string) => void;
+  siteSettings?: SiteSettings;
 }
 
-export default function Footer({ currentLang, onNavigate }: FooterProps) {
+export default function Footer({ currentLang, onNavigate, siteSettings = DEFAULT_SITE_SETTINGS }: FooterProps) {
   const t = TRANSLATIONS[currentLang];
   const currentYear = new Date().getFullYear();
+  const phone = siteSettings.phone || t.contact_phone;
+  const email = siteSettings.email;
+  const address = siteSettings.address[currentLang] || t.contact_address_val;
 
   const logoSrc = '/logos/logo.png';
   const [useFallbackLogo, setUseFallbackLogo] = useState(false);
@@ -106,21 +111,21 @@ export default function Footer({ currentLang, onNavigate }: FooterProps) {
                 <Phone className="w-4 h-4 text-brand-blue-500 mt-0.5 shrink-0" />
                 <div>
                   <span className="block text-brand-slate-400 text-[10px] uppercase font-mono">{t.contact_phone}</span>
-                  <a href="tel:+380675859110" className="hover:text-white transition-colors font-medium">+38 067 585 9110</a>
+                  <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-white transition-colors font-medium">{phone}</a>
                 </div>
               </li>
               <li className="flex items-start space-x-2">
                 <Mail className="w-4 h-4 text-brand-blue-500 mt-0.5 shrink-0" />
                 <div>
                   <span className="block text-brand-slate-400 text-[10px] uppercase font-mono">{t.contact_email}</span>
-                  <a href="mailto:uaos24h@gmail.com" className="hover:text-white transition-colors font-medium">uaos24h@gmail.com</a>
+                  <a href={`mailto:${email}`} className="hover:text-white transition-colors font-medium">{email}</a>
                 </div>
               </li>
               <li className="flex items-start space-x-2">
                 <MapPin className="w-4 h-4 text-brand-blue-500 mt-0.5 shrink-0" />
                 <div>
                   <span className="block text-brand-slate-400 text-[10px] uppercase font-mono">{t.contact_address}</span>
-                  <span className="leading-tight block text-brand-slate-300">{t.contact_address_val}</span>
+                  <span className="leading-tight block text-brand-slate-300">{address}</span>
                 </div>
               </li>
             </ul>
@@ -140,11 +145,6 @@ export default function Footer({ currentLang, onNavigate }: FooterProps) {
               <li>
                 <button onClick={() => onNavigate('privacy')} className="hover:text-white text-left block">
                   {t.privacy_title}
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate('admin')} className="hover:text-white text-left font-mono text-[10px] text-brand-slate-500">
-                  {currentLang === 'uk' ? 'Управління (Вхід)' : 'Administration (Login)'}
                 </button>
               </li>
             </ul>

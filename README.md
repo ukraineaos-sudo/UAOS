@@ -2,24 +2,23 @@
 
 Офіційний сайт громадської спілки **«Українська Асоціація Професійної Безпеки»** (UAOS).
 
-Корпоративний лендинг з каталогом учасників, подіями, формою вступу та адмін-панеллю контенту.
+Корпоративний лендинг з каталогом учасників, подіями, новинами, документами, формою вступу.  
+Контент керується через **Sanity CMS**.
 
 **Репозиторій:** [github.com/Lewa2424/UAOS](https://github.com/Lewa2424/UAOS)
 
 ---
 
-## Можливості
+## Архітектура
 
-- Лендинг: місія, напрями, засновники, учасники, вступ
-- Каталог учасників + сторінки профілів
-- Календар подій (модалка, Google / Outlook / ICS)
-- Форма заявки на членство
-- Сторінка політики конфіденційності
-- Дві мови: **UK / EN**
-- Тема: **light / dark**
-- Адмін-панель: учасники, події, документи, заявки
+```
+Sanity Studio (адмінка)  →  Content Lake  →  Сайт (Vite/React на Vercel)
+Заявка на вступ          →  POST /api/join →  Sanity (+ опційно Formspree)
+```
 
-> **Важливо:** зараз дані зберігаються в `localStorage` браузера (прототип CMS). Для спільного продакшен-адміністрування потрібен бекенд.
+Поки `VITE_SANITY_PROJECT_ID` не заданий — сайт показує локальні seed-дані.
+
+Детальний чекліст акаунтів: [docs/SANITY_SETUP.md](docs/SANITY_SETUP.md)
 
 ---
 
@@ -27,60 +26,100 @@
 
 | | |
 |---|---|
-| UI | React 19 + TypeScript |
-| Збірка | Vite 6 |
+| UI | React 19 + TypeScript + Vite 6 |
 | Стилі | Tailwind CSS v4 |
-| Іконки | lucide-react |
-| Дати / TZ | luxon |
+| CMS | Sanity Studio 3 (`studio/`) |
+| Хостинг сайту | Vercel |
+| Іконки / дати | lucide-react, luxon |
 
 ---
 
-## Запуск локально
-
-**Потрібно:** Node.js 18+
+## Запуск сайту
 
 ```bash
 npm install
+cp .env.example .env.local   # встав Project ID після створення Sanity
 npm run dev
 ```
 
-Сайт: [http://localhost:3000](http://localhost:3000)
-
-Інші команди:
+Сайт: http://localhost:3000
 
 ```bash
-npm run build    # production-збірка → dist/
-npm run preview  # перегляд збірки
-npm run lint     # перевірка TypeScript
+npm run build
+npm run lint
 ```
 
-Файл `.env.example` — шаблон змінних. Для поточного фронтенду Gemini API **не обовʼязковий**.
+### Env (сайт)
+
+| Змінна | Де | Призначення |
+|---|---|---|
+| `VITE_SANITY_PROJECT_ID` | `.env.local` + Vercel | ID проєкту Sanity |
+| `VITE_SANITY_DATASET` | те саме | зазвичай `production` |
+| `VITE_SANITY_STUDIO_URL` | те саме | посилання на Studio |
+| `SANITY_API_WRITE_TOKEN` | **тільки Vercel** (secret) | запис заявок через `/api/join` |
+| `FORMSPREE_JOIN_ENDPOINT` | опційно | дубль заявки на email |
+
+---
+
+## Sanity Studio
+
+```bash
+npm run studio:install
+cp studio/.env.example studio/.env   # той самий Project ID
+npm run studio                       # http://localhost:3333
+```
+
+Деплой Studio на Sanity Hosting:
+
+```bash
+npm run studio:deploy
+```
+
+Після деплою онови `VITE_SANITY_STUDIO_URL` (напр. `https://uaos.sanity.studio`).
+
+Seed демо-подій (потрібен write token):
+
+```bash
+node --env-file=.env.local scripts/seed-events.mjs
+```
+
+У Studio також заведи singleton **Site settings**, документи, учасників, новини.
+
+---
+
+## Адмін на сайті (`#/admin`)
+
+Спрощений хаб: кнопка «Відкрити Sanity Studio» + локальний fallback-список заявок.  
+Логін демо: `admin` / `admin123` (змінити перед продакшеном).
+
+---
+
+## Vercel
+
+1. Import репо GitHub  
+2. Framework: Vite  
+3. Env: `VITE_SANITY_*` + `SANITY_API_WRITE_TOKEN`  
+4. Production branch: `main`  
+5. Preview-гілки для правок UI; контент — drafts у Studio
+
+API route: [`api/join.ts`](api/join.ts)
 
 ---
 
 ## Структура
 
 ```
-src/
-  components/     # секції лендингу, admin, events
-  data/           # seed-дані + localStorage helpers
-  types.ts        # моделі
-public/
-  logos/          # логотип асоціації
+src/                 # лендинг
+  lib/sanity.ts      # клієнт Sanity
+  data/              # fetch* + seed fallbacks
+  components/
+studio/              # Sanity Studio + schemaTypes
+api/join.ts          # serverless заявки
+docs/SANITY_SETUP.md
 ```
 
-Логотип: покладіть `public/logos/logo.png` (горизонтальний wordmark).
-
 ---
 
-## Адмін-панель
+## Ліцензія
 
-Відкривається з хедера (**ADMIN**) або `#/admin`.
-
-У демо-режимі логін захардкоджений у клієнті — перед продакшеном змініть auth і підключіть сервер.
-
----
-
-## Ліцензія / права
-
-Код і контент — для ГС «УАПБ» / UAOS. Усі права захищені, якщо не вказано інше.
+Код і контент — для ГС «УАПБ» / UAOS.

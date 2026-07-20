@@ -1,22 +1,21 @@
-import { AssociationEvent } from '../types';
+import {AssociationEvent} from '../types'
+import {getSanityClient, mapLocale, sanityConfigured, urlForImage} from '../lib/sanity'
 
-const STORAGE_KEY = 'uaos_events_v2';
-
-const INITIAL_EVENTS: AssociationEvent[] = [
+export const INITIAL_EVENTS: AssociationEvent[] = [
   {
     id: 'evt_demo_1',
     published: true,
     title: {
       uk: 'Тренінг "Основи безпеки на виробництві"',
-      en: 'Training "Fundamentals of Industrial Safety"'
+      en: 'Training "Fundamentals of Industrial Safety"',
     },
     shortDescription: {
       uk: 'Базовий тренінг для нових спеціалістів з охорони праці.',
-      en: 'Basic training for new occupational safety specialists.'
+      en: 'Basic training for new occupational safety specialists.',
     },
     fullDescription: {
       uk: 'Детальний опис тренінгу...',
-      en: 'Detailed description of the training...'
+      en: 'Detailed description of the training...',
     },
     type: 'training',
     format: 'online',
@@ -25,22 +24,22 @@ const INITIAL_EVENTS: AssociationEvent[] = [
     timeZone: 'Europe/Kyiv',
     onlineUrl: 'https://zoom.us/j/123456789',
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   },
   {
     id: 'evt_demo_2',
     published: true,
     title: {
       uk: 'Конференція "Майбутнє охорони праці"',
-      en: 'Conference "Future of Occupational Safety"'
+      en: 'Conference "Future of Occupational Safety"',
     },
     shortDescription: {
       uk: 'Щорічна конференція членів асоціації.',
-      en: 'Annual conference of association members.'
+      en: 'Annual conference of association members.',
     },
     fullDescription: {
       uk: 'Детальний опис конференції...',
-      en: 'Detailed description of the conference...'
+      en: 'Detailed description of the conference...',
     },
     type: 'conference',
     format: 'hybrid',
@@ -49,72 +48,74 @@ const INITIAL_EVENTS: AssociationEvent[] = [
     timeZone: 'Europe/Kyiv',
     location: {
       uk: 'Київ, вул. Хрещатик, 1',
-      en: 'Kyiv, Khreshchatyk st., 1'
+      en: 'Kyiv, Khreshchatyk st., 1',
     },
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
-
-export function getEvents(): AssociationEvent[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (err) {
-    console.error('Error loading events from localStorage:', err);
-  }
-  return INITIAL_EVENTS;
-}
-
-export function saveEvents(events: AssociationEvent[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-  } catch (err) {
-    console.error('Error saving events to localStorage:', err);
-  }
-}
-
-export function addEvent(event: Omit<AssociationEvent, 'id' | 'createdAt' | 'updatedAt'>): AssociationEvent {
-  const events = getEvents();
-  const newEvent: AssociationEvent = {
-    ...event,
-    id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
-  events.push(newEvent);
-  saveEvents(events);
-  return newEvent;
-}
+  },
+]
 
-export function updateEvent(event: AssociationEvent): void {
-  const events = getEvents();
-  const index = events.findIndex(e => e.id === event.id);
-  if (index !== -1) {
-    events[index] = { ...event, updatedAt: new Date().toISOString() };
-    saveEvents(events);
+const EVENTS_QUERY = `*[_type == "event" && published == true] | order(startAt asc) {
+  _id,
+  _createdAt,
+  _updatedAt,
+  published,
+  title,
+  shortDescription,
+  fullDescription,
+  type,
+  format,
+  startAt,
+  endAt,
+  timeZone,
+  location,
+  onlineUrl,
+  registrationUrl,
+  organizer,
+  coverImage
+}`
+
+function mapEvent(doc: any): AssociationEvent {
+  return {
+    id: doc._id,
+    published: Boolean(doc.published),
+    title: mapLocale(doc.title),
+    shortDescription: mapLocale(doc.shortDescription),
+    fullDescription: mapLocale(doc.fullDescription),
+    type: doc.type || 'meeting',
+    format: doc.format || 'online',
+    startAt: doc.startAt,
+    endAt: doc.endAt,
+    timeZone: doc.timeZone || 'Europe/Kyiv',
+    location: doc.location ? mapLocale(doc.location) : undefined,
+    onlineUrl: doc.onlineUrl || undefined,
+    registrationUrl: doc.registrationUrl || undefined,
+    organizer: doc.organizer ? mapLocale(doc.organizer) : undefined,
+    coverImageUrl: urlForImage(doc.coverImage) || undefined,
+    createdAt: doc._createdAt || new Date().toISOString(),
+    updatedAt: doc._updatedAt || new Date().toISOString(),
   }
 }
 
-export function deleteEvent(id: string): void {
-  const events = getEvents();
-  const filtered = events.filter(e => e.id !== id);
-  saveEvents(filtered);
-}
-
-export function toggleEventPublished(id: string): void {
-  const events = getEvents();
-  const event = events.find(e => e.id === id);
-  if (event) {
-    event.published = !event.published;
-    event.updatedAt = new Date().toISOString();
-    saveEvents(events);
+/** Async loader: Sanity when configured, otherwise seed. */
+export async function fetchEvents(): Promise<AssociationEvent[]> {
+  const client = getSanityClient()
+  if (!client || !sanityConfigured) {
+    return INITIAL_EVENTS
+  }
+  try {
+    const docs = await client.fetch(EVENTS_QUERY)
+    if (!Array.isArray(docs) || docs.length === 0) {
+      return INITIAL_EVENTS
+    }
+    return docs.map(mapEvent)
+  } catch (err) {
+    console.error('Sanity fetchEvents failed, using seed:', err)
+    return INITIAL_EVENTS
   }
 }
 
-export function resetEvents(): AssociationEvent[] {
-  saveEvents(INITIAL_EVENTS);
-  return INITIAL_EVENTS;
+/** @deprecated Sync localStorage API — kept for rare callers; prefer fetchEvents */
+export function getEvents(): AssociationEvent[] {
+  return INITIAL_EVENTS
 }

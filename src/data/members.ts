@@ -1,4 +1,5 @@
 import { AssociationMember } from '../types';
+import { getSanityClient, mapLocale, sanityConfigured, urlForImage } from '../lib/sanity';
 
 export const INITIAL_MEMBERS: AssociationMember[] = [
   {
@@ -431,4 +432,102 @@ export function resetMembers(): AssociationMember[] {
     console.error('Failed to reset members in localStorage', e);
   }
   return INITIAL_MEMBERS;
+}
+
+const MEMBERS_QUERY = `*[_type == "member" && published == true] | order(order asc) {
+  _id,
+  _updatedAt,
+  published,
+  order,
+  "slug": slug.current,
+  profileLevel,
+  name,
+  shortName,
+  category,
+  shortDescription,
+  fullDescription,
+  logoImage,
+  coverImage,
+  websiteUrl,
+  publicEmail,
+  publicPhone,
+  competencies,
+  services,
+  certificates[]{ title, documentUrl, "fileUrl": file.asset->url },
+  cases[]{ title, description, image },
+  products[]{ name, description, image, price },
+  internalNotes
+}`
+
+function mapMember(doc: any): AssociationMember {
+  const logoFromImage = urlForImage(doc.logoImage)
+  const coverFromImage = urlForImage(doc.coverImage)
+
+  return {
+    id: doc._id,
+    slug: doc.slug || doc._id,
+    order: typeof doc.order === 'number' ? doc.order : 0,
+    published: Boolean(doc.published),
+    profileLevel: doc.profileLevel === 'extended' ? 'extended' : 'basic',
+    name: mapLocale(doc.name),
+    shortName: doc.shortName || '',
+    category: mapLocale(doc.category),
+    shortDescription: mapLocale(doc.shortDescription),
+    fullDescription: mapLocale(doc.fullDescription),
+    logoUrl: logoFromImage || doc.shortName || '',
+    coverImageUrl: coverFromImage || '',
+    websiteUrl: doc.websiteUrl || undefined,
+    publicEmail: doc.publicEmail || undefined,
+    publicPhone: doc.publicPhone || undefined,
+    competencies: Array.isArray(doc.competencies)
+      ? doc.competencies.map((c: any) => mapLocale(c))
+      : undefined,
+    services: Array.isArray(doc.services)
+      ? doc.services.map((s: any) => mapLocale(s))
+      : undefined,
+    certificates: Array.isArray(doc.certificates)
+      ? doc.certificates.map((c: any, i: number) => ({
+          id: `cert-${doc._id}-${i}`,
+          title: mapLocale(c.title),
+          documentUrl: c.fileUrl || c.documentUrl || '#',
+        }))
+      : undefined,
+    cases: Array.isArray(doc.cases)
+      ? doc.cases.map((c: any, i: number) => ({
+          id: `case-${doc._id}-${i}`,
+          title: mapLocale(c.title),
+          description: mapLocale(c.description),
+          imageUrl: urlForImage(c.image) || undefined,
+        }))
+      : undefined,
+    products: Array.isArray(doc.products)
+      ? doc.products.map((p: any, i: number) => ({
+          id: `prod-${doc._id}-${i}`,
+          name: mapLocale(p.name),
+          description: mapLocale(p.description),
+          imageUrl: urlForImage(p.image) || undefined,
+          price: p.price || undefined,
+        }))
+      : undefined,
+    lastUpdated: doc._updatedAt ? String(doc._updatedAt).slice(0, 10) : undefined,
+    internalNotes: doc.internalNotes || undefined,
+  }
+}
+
+/** Async loader: Sanity when configured, otherwise seed. */
+export async function fetchMembers(): Promise<AssociationMember[]> {
+  const client = getSanityClient()
+  if (!client || !sanityConfigured) {
+    return INITIAL_MEMBERS
+  }
+  try {
+    const docs = await client.fetch(MEMBERS_QUERY)
+    if (!Array.isArray(docs) || docs.length === 0) {
+      return INITIAL_MEMBERS
+    }
+    return docs.map(mapMember)
+  } catch (err) {
+    console.error('Sanity fetchMembers failed, using seed:', err)
+    return INITIAL_MEMBERS
+  }
 }

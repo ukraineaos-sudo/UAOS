@@ -116,18 +116,6 @@ export default function Header({
 
           {/* Actions & Buttons */}
           <div className="hidden lg:flex items-center space-x-3">
-            {/* Admin link */}
-            <button
-              onClick={() => onNavigate('admin')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono border transition-all duration-200 cursor-pointer ${
-                currentRoute === 'admin'
-                  ? 'border-brand-blue-500 text-brand-blue-500 bg-brand-blue-50/50 dark:bg-brand-blue-950/20'
-                  : 'border-brand-slate-200 dark:border-brand-slate-800 text-brand-slate-500 dark:text-brand-slate-400 hover:border-brand-blue-500'
-              }`}
-            >
-              ADMIN
-            </button>
-
             {/* Language Switcher */}
             <button
               onClick={() => setCurrentLang(currentLang === 'uk' ? 'en' : 'uk')}
@@ -206,13 +194,6 @@ export default function Header({
               </button>
             ))}
             <div className="pt-4 border-t border-brand-slate-100 dark:border-brand-slate-800/80 flex flex-col space-y-3 px-4">
-              <button
-                onClick={() => { setMobileMenuOpen(false); onNavigate('admin'); }}
-                className="w-full py-2.5 rounded-xl border border-brand-slate-300 dark:border-brand-slate-700 text-center font-mono text-sm text-brand-slate-600 dark:text-brand-slate-300 hover:bg-brand-slate-50 dark:hover:bg-brand-slate-900"
-              >
-                {currentLang === 'uk' ? 'ПАНЕЛЬ АДМІНІСТРАТОРА' : 'ADMIN PANEL'}
-              </button>
-              
               <button
                 onClick={() => handleNavItemClick('join')}
                 className="w-full py-3 rounded-xl bg-brand-blue-500 hover:bg-brand-blue-600 active:bg-brand-blue-700 text-white font-medium text-sm text-center shadow-md shadow-brand-blue-500/15"
