@@ -28,7 +28,7 @@ export default function EventsCalendarModal({
 }: EventsCalendarModalProps) {
   const t = TRANSLATIONS[currentLang];
   const [activeTab, setActiveTab] = useState<TabType>('upcoming');
-  const [currentMonth, setCurrentMonth] = useState(DateTime.utc().startOf('month'));
+  const [currentMonth, setCurrentMonth] = useState<DateTime>(DateTime.utc().startOf('month'));
   const [selectedDate, setSelectedDate] = useState<DateTime | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -172,7 +172,7 @@ export default function EventsCalendarModal({
       tabIndex={-1}
       ref={modalRef}
     >
-      <div className="bg-brand-slate-50 dark:bg-brand-slate-900 w-full h-[100dvh] md:h-auto md:max-h-[85vh] md:rounded-2xl shadow-2xl flex flex-col overflow-hidden max-w-6xl">
+      <div className="bg-brand-slate-50 dark:bg-brand-slate-900 w-full h-[100dvh] md:h-auto md:max-h-[85vh] md:rounded-2xl shadow-2xl flex flex-col overflow-hidden min-h-0 max-w-6xl">
         
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white dark:bg-brand-slate-800 border-b border-brand-slate-200 dark:border-brand-slate-700 shrink-0">

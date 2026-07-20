@@ -24,94 +24,94 @@ export default function EventDetails({ event, currentLang }: EventDetailsProps) 
   const past = isPastEvent(event);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-white dark:bg-brand-slate-900 rounded-2xl overflow-hidden">
-      {/* Cover + text scroll together; action buttons stay pinned below */}
-      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain custom-scrollbar">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,1fr)_auto] bg-white dark:bg-brand-slate-900 rounded-2xl overflow-hidden">
+      {/* Cover + text scroll; actions stay in bottom row */}
+      <div className="min-h-0 overflow-y-auto overscroll-contain custom-scrollbar">
         {event.coverImageUrl && (
           <div className="w-full bg-brand-slate-50 dark:bg-brand-slate-800/80 border-b border-brand-slate-100 dark:border-brand-slate-700">
             <img
               src={event.coverImageUrl}
               alt={event.title[currentLang]}
-              className="w-full max-h-[min(42vh,280px)] object-contain object-center"
+              className="w-full max-h-[min(36vh,240px)] object-contain object-center"
             />
           </div>
         )}
 
         <div className="p-6 sm:p-8">
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <span className={`px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider rounded-full ${
-            event.type === 'training' ? 'bg-brand-blue-50 text-brand-blue-600 dark:bg-brand-blue-900/20 dark:text-brand-sky-300' :
-            event.type === 'meeting' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300' :
-            'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300'
-          }`}>
-            {typeText}
-          </span>
-          <span className="px-3 py-1 text-xs font-semibold text-brand-slate-600 dark:text-brand-slate-300 bg-brand-slate-100 dark:bg-brand-slate-800 rounded-full">
-            {formatText}
-          </span>
-          {past && (
-            <span className="px-3 py-1 text-xs font-semibold text-brand-slate-500 dark:text-brand-slate-400 bg-brand-slate-100 dark:bg-brand-slate-800 rounded-full">
-              {t.events_archive_tab}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <span className={`px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider rounded-full ${
+              event.type === 'training' ? 'bg-brand-blue-50 text-brand-blue-600 dark:bg-brand-blue-900/20 dark:text-brand-sky-300' :
+              event.type === 'meeting' ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300' :
+              'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300'
+            }`}>
+              {typeText}
             </span>
-          )}
-        </div>
-
-        <h2 className="text-2xl sm:text-3xl font-display font-bold text-brand-slate-900 dark:text-white leading-tight mb-6">
-          {event.title[currentLang]}
-        </h2>
-
-        <div className="space-y-4 mb-8">
-          <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
-            <Clock className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium">{dateRange}</p>
-              <p className="text-sm text-brand-slate-500 dark:text-brand-slate-400">{t.events_timezone}</p>
-            </div>
+            <span className="px-3 py-1 text-xs font-semibold text-brand-slate-600 dark:text-brand-slate-300 bg-brand-slate-100 dark:bg-brand-slate-800 rounded-full">
+              {formatText}
+            </span>
+            {past && (
+              <span className="px-3 py-1 text-xs font-semibold text-brand-slate-500 dark:text-brand-slate-400 bg-brand-slate-100 dark:bg-brand-slate-800 rounded-full">
+                {t.events_archive_tab}
+              </span>
+            )}
           </div>
 
-          {(event.format === 'offline' || event.format === 'hybrid') && event.location && event.location[currentLang] && (
-            <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
-              <MapPin className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
-              <p>{event.location[currentLang]}</p>
-            </div>
-          )}
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-brand-slate-900 dark:text-white leading-tight mb-6">
+            {event.title[currentLang]}
+          </h2>
 
-          {(event.format === 'online' || event.format === 'hybrid') && (
+          <div className="space-y-4 mb-8">
             <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
-              <Globe className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
-              <p>{t.events_online}</p>
-            </div>
-          )}
-
-          {event.organizer && event.organizer[currentLang] && (
-            <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
-              <User className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
+              <Clock className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-brand-slate-500 dark:text-brand-slate-400">{t.events_organizer}</p>
-                <p>{event.organizer[currentLang]}</p>
+                <p className="font-medium">{dateRange}</p>
+                <p className="text-sm text-brand-slate-500 dark:text-brand-slate-400">{t.events_timezone}</p>
               </div>
             </div>
-          )}
-        </div>
 
-        <div className="prose prose-slate dark:prose-invert max-w-none">
-          <p className="text-lg text-brand-slate-700 dark:text-brand-slate-200 mb-6 font-medium">
-            {event.shortDescription[currentLang]}
-          </p>
-          {event.fullDescription && event.fullDescription[currentLang] && (
-            <div className="text-brand-slate-600 dark:text-brand-slate-300 whitespace-pre-line">
-              {event.fullDescription[currentLang]}
-            </div>
-          )}
-        </div>
+            {(event.format === 'offline' || event.format === 'hybrid') && event.location && event.location[currentLang] && (
+              <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
+                <MapPin className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
+                <p>{event.location[currentLang]}</p>
+              </div>
+            )}
+
+            {(event.format === 'online' || event.format === 'hybrid') && (
+              <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
+                <Globe className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
+                <p>{t.events_online}</p>
+              </div>
+            )}
+
+            {event.organizer && event.organizer[currentLang] && (
+              <div className="flex items-start gap-3 text-brand-slate-700 dark:text-brand-slate-300">
+                <User className="w-5 h-5 text-brand-slate-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm text-brand-slate-500 dark:text-brand-slate-400">{t.events_organizer}</p>
+                  <p>{event.organizer[currentLang]}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="prose prose-slate dark:prose-invert max-w-none">
+            <p className="text-lg text-brand-slate-700 dark:text-brand-slate-200 mb-6 font-medium">
+              {event.shortDescription[currentLang]}
+            </p>
+            {event.fullDescription && event.fullDescription[currentLang] && (
+              <div className="text-brand-slate-600 dark:text-brand-slate-300 whitespace-pre-line">
+                {event.fullDescription[currentLang]}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="p-6 sm:p-8 bg-brand-slate-50 dark:bg-brand-slate-800/50 border-t border-brand-slate-100 dark:border-brand-slate-700 flex flex-col sm:flex-row items-center gap-4 shrink-0">
+      <div className="p-4 sm:p-6 bg-brand-slate-50 dark:bg-brand-slate-800/50 border-t border-brand-slate-100 dark:border-brand-slate-700 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
         {!past && (
           <>
             {event.registrationUrl && (
-              <a 
+              <a
                 href={event.registrationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -121,9 +121,9 @@ export default function EventDetails({ event, currentLang }: EventDetailsProps) 
                 <ExternalLink className="w-4 h-4" />
               </a>
             )}
-            
+
             {event.onlineUrl && (
-              <a 
+              <a
                 href={event.onlineUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -138,15 +138,14 @@ export default function EventDetails({ event, currentLang }: EventDetailsProps) 
           </>
         )}
 
-        {past && (
-           <button 
-             onClick={() => shareEvent(event, currentLang)}
-             className="w-full sm:w-auto px-6 py-3 bg-brand-slate-200 dark:bg-brand-slate-700 hover:bg-brand-slate-300 dark:hover:bg-brand-slate-600 text-brand-slate-900 dark:text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-           >
-             <Share2 className="w-5 h-5" />
-             {t.events_share}
-           </button>
-        )}
+        <button
+          type="button"
+          onClick={() => shareEvent(event, currentLang)}
+          className="w-full sm:w-auto px-6 py-3 bg-brand-blue-500 hover:bg-brand-blue-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <Share2 className="w-5 h-5" />
+          {t.events_share}
+        </button>
       </div>
     </div>
   );
