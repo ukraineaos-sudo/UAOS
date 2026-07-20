@@ -25,17 +25,19 @@ export default function EventDetails({ event, currentLang }: EventDetailsProps) 
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-white dark:bg-brand-slate-900 rounded-2xl overflow-hidden">
-      {event.coverImageUrl && (
-        <div className="w-full h-36 sm:h-44 max-h-[28vh] relative bg-brand-slate-100 dark:bg-brand-slate-800 shrink-0">
-          <img 
-            src={event.coverImageUrl} 
-            alt={event.title[currentLang]} 
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+      {/* Cover + text scroll together; action buttons stay pinned below */}
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain custom-scrollbar">
+        {event.coverImageUrl && (
+          <div className="w-full bg-brand-slate-50 dark:bg-brand-slate-800/80 border-b border-brand-slate-100 dark:border-brand-slate-700">
+            <img
+              src={event.coverImageUrl}
+              alt={event.title[currentLang]}
+              className="w-full max-h-[min(42vh,280px)] object-contain object-center"
+            />
+          </div>
+        )}
 
-      <div className="p-6 sm:p-8 flex-1 min-h-0 overflow-y-auto">
+        <div className="p-6 sm:p-8">
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <span className={`px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider rounded-full ${
             event.type === 'training' ? 'bg-brand-blue-50 text-brand-blue-600 dark:bg-brand-blue-900/20 dark:text-brand-sky-300' :
@@ -101,6 +103,7 @@ export default function EventDetails({ event, currentLang }: EventDetailsProps) 
               {event.fullDescription[currentLang]}
             </div>
           )}
+        </div>
         </div>
       </div>
 
