@@ -54,7 +54,7 @@ export default function SaveEventMenu({ event, currentLang }: SaveEventMenuProps
   };
 
   return (
-    <div className="relative inline-block" ref={menuRef}>
+    <div className="relative w-full sm:w-auto" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="px-6 py-3 bg-brand-blue-600 hover:bg-brand-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"

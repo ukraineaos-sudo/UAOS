@@ -205,12 +205,12 @@ export default function EventsCalendarModal({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden relative">
           
           {/* Mobile Details Overlay */}
           {selectedEvent && (
-            <div className="absolute inset-0 z-10 bg-brand-slate-50 dark:bg-brand-slate-900 lg:hidden flex flex-col">
-              <div className="px-4 py-3 bg-white dark:bg-brand-slate-800 border-b border-brand-slate-200 dark:border-brand-slate-700">
+            <div className="absolute inset-0 z-10 bg-brand-slate-50 dark:bg-brand-slate-900 lg:hidden flex flex-col min-h-0">
+              <div className="px-4 py-3 bg-white dark:bg-brand-slate-800 border-b border-brand-slate-200 dark:border-brand-slate-700 shrink-0">
                 <button 
                   onClick={() => onSelectEvent(null)}
                   className="text-sm font-medium text-brand-slate-600 hover:text-brand-slate-900 dark:text-brand-slate-400 dark:hover:text-white flex items-center gap-1"
@@ -218,14 +218,14 @@ export default function EventsCalendarModal({
                   <ChevronLeft className="w-4 h-4" /> Назад
                 </button>
               </div>
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-hidden">
                 <EventDetails event={selectedEvent} currentLang={currentLang} />
               </div>
             </div>
           )}
 
           {/* Left Panel: Lists or Calendar */}
-          <div className="flex-1 lg:max-w-[400px] border-r border-brand-slate-200 dark:border-brand-slate-700 bg-brand-slate-50 dark:bg-brand-slate-900/50 flex flex-col h-full overflow-hidden shrink-0">
+          <div className="flex-1 lg:max-w-[400px] border-r border-brand-slate-200 dark:border-brand-slate-700 bg-brand-slate-50 dark:bg-brand-slate-900/50 flex flex-col h-full min-h-0 overflow-hidden shrink-0">
             {activeTab === 'upcoming' && (
               <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {renderEventList(upcomingEvents, t.events_no_upcoming)}
@@ -310,7 +310,7 @@ export default function EventsCalendarModal({
           </div>
 
           {/* Right Panel: Details (Desktop) */}
-          <div className="hidden lg:block flex-1 h-full overflow-hidden bg-brand-slate-100 dark:bg-brand-slate-900/30">
+          <div className="hidden lg:flex flex-col flex-1 h-full min-h-0 overflow-hidden bg-brand-slate-100 dark:bg-brand-slate-900/30">
             {selectedEvent ? (
               <EventDetails event={selectedEvent} currentLang={currentLang} />
             ) : (

@@ -1,4 +1,4 @@
-# UAOS — файлы, изменённые в сессиях (для синка в AI Studio)
+image.png# UAOS — файлы, изменённые в сессиях (для синка в AI Studio)
 # Правило: новый изменённый файл → добавить строкой ниже.
 # Уже есть в списке → НЕ дублировать.
 # Формат: путь от корня репо, один файл = одна строка.
@@ -47,3 +47,6 @@ studio/tsconfig.json
 tsconfig.json
 vercel.json
 studio/package-lock.json
+src/components/events/EventDetails.tsx
+src/components/events/EventsCalendarModal.tsx
+src/components/events/SaveEventMenu.tsx
