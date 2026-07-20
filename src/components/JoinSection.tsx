@@ -76,7 +76,7 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
 
     try {
       let savedRemotely = false;
-      const payloadForServer = {...payloadBase, consent, hp};
+      const payloadForServer = {...payloadBase, privacyConsent: true, consent: true, hp};
       const payloadForLocal = payloadBase;
 
       try {
@@ -349,7 +349,7 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
                     />
                   </div>
 
-                  {/* Consent checkbox */}
+                  {/* Consent checkbox — GDPR: unchecked by default, link to Privacy Policy */}
                   <div className="space-y-1">
                     <label className="flex items-start space-x-2.5 cursor-pointer">
                       <input
@@ -359,7 +359,31 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
                         className="mt-0.5 rounded border-brand-slate-300 text-brand-blue-500 focus:ring-brand-blue-500"
                       />
                       <span className="text-[11px] text-brand-slate-600 dark:text-brand-slate-400 leading-snug">
-                        {t.join_form_consent}
+                        {currentLang === 'uk' ? (
+                          <>
+                            Я ознайомлений(а) з{' '}
+                            <a
+                              href="#/privacy"
+                              className="text-brand-blue-500 hover:underline font-medium"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Політикою конфіденційності
+                            </a>{' '}
+                            та даю згоду на обробку моїх персональних даних.
+                          </>
+                        ) : (
+                          <>
+                            I have read the{' '}
+                            <a
+                              href="#/privacy"
+                              className="text-brand-blue-500 hover:underline font-medium"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Privacy Policy
+                            </a>{' '}
+                            and consent to the processing of my personal data.
+                          </>
+                        )}
                       </span>
                     </label>
                     {errors.consent && <span className="text-[10px] text-red-500 block">{errors.consent}</span>}
@@ -373,8 +397,8 @@ export default function JoinSection({ currentLang }: JoinSectionProps) {
                   )}
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3.5 rounded-xl bg-brand-blue-500 hover:bg-brand-blue-600 active:bg-brand-blue-700 disabled:bg-brand-slate-400 text-white font-medium text-xs text-center shadow-md transition-all duration-200 cursor-pointer"
+                    disabled={isSubmitting || !consent}
+                    className="w-full py-3.5 rounded-xl bg-brand-blue-500 hover:bg-brand-blue-600 active:bg-brand-blue-700 disabled:bg-brand-slate-400 disabled:cursor-not-allowed text-white font-medium text-xs text-center shadow-md transition-all duration-200 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center space-x-2">

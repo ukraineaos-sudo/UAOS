@@ -17,6 +17,7 @@
     "@sanity/client": "^6.28.0",
     "@sanity/image-url": "^1.1.0",
     "@tailwindcss/vite": "^4.1.14",
+    "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^5.0.4",
     "lucide-react": "^0.546.0",
     "luxon": "^3.7.2",

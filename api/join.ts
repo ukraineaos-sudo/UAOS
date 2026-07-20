@@ -71,7 +71,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const email = typeof body?.email === 'string' ? body.email.trim() : ''
   const phone = typeof body?.phone === 'string' ? body.phone.trim() : ''
   const message = typeof body?.message === 'string' ? body.message.trim() : ''
-  const consent = body?.consent === true
+  const consent = body?.privacyConsent === true || body?.consent === true
+  const consentTimestamp = new Date().toISOString()
 
   const normalizeWhitespace = (s: string) => s.replace(/\s+/g, ' ')
   const max = (s: string, n: number) => (s.length > n ? s.slice(0, n) : s)
@@ -89,7 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({error: 'Missing required fields'})
   }
   if (!consent) {
-    return res.status(400).json({error: 'Consent is required'})
+    return res.status(400).json({error: 'Privacy consent is required'})
   }
 
   // Length limits (PII/spam control)
@@ -141,7 +142,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         email,
         phone: phoneN,
         message: messageN || '',
-        submittedAt: new Date().toISOString(),
+        privacyConsent: true,
+        consentTimestamp,
+        consentIp: clientIp === 'unknown' ? '' : clientIp,
+        submittedAt: consentTimestamp,
       })
       sanitySaved = true
     } catch (err) {
@@ -164,6 +168,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           email,
           phone: phoneN,
           message: messageN || '',
+          privacyConsent: true,
+          consentTimestamp,
         }),
       })
     } catch (err) {

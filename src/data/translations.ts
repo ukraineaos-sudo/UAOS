@@ -120,7 +120,7 @@ export const TRANSLATIONS = {
     join_form_email_lbl: 'Електронна пошта',
     join_form_phone_lbl: 'Номер телефону',
     join_form_msg_lbl: 'Супровідне повідомлення / Чому хочете вступити',
-    join_form_consent: 'Я даю згоду на обробку персональних даних відповідно до Політики конфіденційності',
+    join_form_consent: 'Я ознайомлений(а) з Політикою конфіденційності та даю згоду на обробку моїх персональних даних.',
     join_form_success: 'Дякуємо! Ваша заявка успішно надіслана. Наш представник зв’яжеться з вами найближчим часом.',
     join_form_error: 'Сталася помилка при відправленні. Будь ласка, перевірте всі обов’язкові поля.',
 
@@ -221,7 +221,7 @@ export const TRANSLATIONS = {
 
     // Privacy Page
     privacy_title: 'Політика конфіденційності',
-    privacy_last_updated: 'Останнє оновлення: 16 липня 2026 року',
+    privacy_last_updated: 'Останнє оновлення: 20 липня 2026 року',
 
     // Common
     field_required: 'Це поле є обов’язковим',
@@ -349,7 +349,7 @@ export const TRANSLATIONS = {
     join_form_email_lbl: 'Email Address',
     join_form_phone_lbl: 'Phone Number',
     join_form_msg_lbl: 'Covering Letter / Why do you want to join?',
-    join_form_consent: 'I consent to the processing of personal data in accordance with the Privacy Policy',
+    join_form_consent: 'I have read the Privacy Policy and consent to the processing of my personal data.',
     join_form_success: 'Thank you! Your application has been successfully submitted. Our representative will contact you shortly.',
     join_form_error: 'An error occurred during submission. Please check all required fields.',
 
@@ -450,7 +450,7 @@ export const TRANSLATIONS = {
 
     // Privacy Page
     privacy_title: 'Privacy Policy',
-    privacy_last_updated: 'Last updated: July 16, 2026',
+    privacy_last_updated: 'Last updated: July 20, 2026',
 
     // Common
     field_required: 'This field is required',

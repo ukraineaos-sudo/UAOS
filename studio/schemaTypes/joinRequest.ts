@@ -27,6 +27,29 @@ export const joinRequestType = defineType({
     defineField({name: 'email', title: 'Email', type: 'string'}),
     defineField({name: 'phone', title: 'Phone', type: 'string'}),
     defineField({name: 'message', title: 'Message', type: 'text'}),
+    defineField({
+      name: 'privacyConsent',
+      title: 'Privacy policy consent',
+      type: 'boolean',
+      readOnly: true,
+      validation: (rule) =>
+        rule.required().custom((consent) =>
+          consent === true ? true : 'Consent is required'
+        ),
+    }),
+    defineField({
+      name: 'consentTimestamp',
+      title: 'Consent timestamp',
+      type: 'datetime',
+      readOnly: true,
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'consentIp',
+      title: 'Consent IP (audit trail)',
+      type: 'string',
+      readOnly: true,
+    }),
     defineField({name: 'submittedAt', title: 'Submitted at', type: 'datetime', readOnly: true}),
   ],
   preview: {

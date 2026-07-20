@@ -50,3 +50,8 @@ studio/package-lock.json
 src/components/events/EventDetails.tsx
 src/components/events/EventsCalendarModal.tsx
 src/components/events/SaveEventMenu.tsx
+src/components/PrivacyPage.tsx
+src/components/CookieBanner.tsx
+src/components/AnalyticsGate.tsx
+src/lib/cookieConsent.ts
+src/data/translations.ts

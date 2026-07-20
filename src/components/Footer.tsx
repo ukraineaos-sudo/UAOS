@@ -7,9 +7,15 @@ interface FooterProps {
   currentLang: 'uk' | 'en';
   onNavigate: (route: string) => void;
   siteSettings?: SiteSettings;
+  onResetCookieConsent?: () => void;
 }
 
-export default function Footer({ currentLang, onNavigate, siteSettings = DEFAULT_SITE_SETTINGS }: FooterProps) {
+export default function Footer({
+  currentLang,
+  onNavigate,
+  siteSettings = DEFAULT_SITE_SETTINGS,
+  onResetCookieConsent,
+}: FooterProps) {
   const t = TRANSLATIONS[currentLang];
   const currentYear = new Date().getFullYear();
   const phone = siteSettings.phone || t.contact_phone;
@@ -147,6 +153,17 @@ export default function Footer({ currentLang, onNavigate, siteSettings = DEFAULT
                   {t.privacy_title}
                 </button>
               </li>
+              {onResetCookieConsent && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={onResetCookieConsent}
+                    className="hover:text-white text-left block"
+                  >
+                    {currentLang === 'uk' ? 'Налаштування cookie' : 'Cookie settings'}
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 

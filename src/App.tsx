@@ -12,6 +12,14 @@ import JoinSection from './components/JoinSection'
 import PrivacyPage from './components/PrivacyPage'
 import NewsSection from './components/NewsSection'
 import EventsCalendarModal from './components/events/EventsCalendarModal'
+import CookieBanner from './components/CookieBanner'
+import AnalyticsGate from './components/AnalyticsGate'
+import {
+  getCookieConsent,
+  setCookieConsent,
+  clearCookieConsent,
+  type CookieConsentValue,
+} from './lib/cookieConsent'
 
 import {fetchMembers} from './data/members'
 import {fetchDocuments} from './data/documents'
@@ -46,6 +54,22 @@ export default function App() {
 
   const [eventsModalOpen, setEventsModalOpen] = useState(false)
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+  const [cookieConsent, setCookieConsentState] = useState<CookieConsentValue>(() => getCookieConsent())
+
+  const handleCookieAccept = () => {
+    setCookieConsent('accepted')
+    setCookieConsentState('accepted')
+  }
+
+  const handleCookieNecessaryOnly = () => {
+    setCookieConsent('necessary')
+    setCookieConsentState('necessary')
+  }
+
+  const handleResetCookieConsent = () => {
+    clearCookieConsent()
+    setCookieConsentState(null)
+  }
 
   useEffect(() => {
     if (currentRoute === 'member-details') {
@@ -133,7 +157,11 @@ export default function App() {
 
     handlePopState()
     window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
+    window.addEventListener('hashchange', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      window.removeEventListener('hashchange', handlePopState)
+    }
   }, [])
 
   const safePushState = (data: any, unused: string, url?: string | null) => {
@@ -274,6 +302,7 @@ export default function App() {
           currentLang={currentLang}
           onNavigate={handleNavigation}
           siteSettings={siteSettings}
+          onResetCookieConsent={handleResetCookieConsent}
         />
 
         <EventsCalendarModal
@@ -284,6 +313,17 @@ export default function App() {
           onSelectEvent={setSelectedEventId}
           onClose={closeEventsCalendar}
         />
+
+        {cookieConsent === null && (
+          <CookieBanner
+            currentLang={currentLang}
+            onAccept={handleCookieAccept}
+            onNecessaryOnly={handleCookieNecessaryOnly}
+            onOpenPrivacy={() => handleNavigation('privacy')}
+          />
+        )}
+
+        <AnalyticsGate consent={cookieConsent} />
       </div>
     </div>
   )
